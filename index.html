@@ -713,6 +713,9 @@
 </div>
 
 <script>
+  // Web App URL dari Google Apps Script Anda
+  const GAS_API_URL = "https://script.google.com/macros/s/AKfycbweuHAa4UVLPpGFZ_91pXoZ5-V15v2Cy1H2thSNgK6rmrkYM42PptklWlTkRG8ESyO4jw/exec";
+
   function setInput(text) {
     document.getElementById('hanziInput').value = text;
   }
@@ -748,10 +751,17 @@
     document.getElementById('loading').style.display = 'block';
     document.getElementById('resultSection').style.display = 'none';
 
-    google.script.run
-      .withSuccessHandler(renderResults)
-      .withFailureHandler(handleError)
-      .processHanziInput(trimmedInput);
+    // Memanggil API Google Apps Script melalui fetch
+    fetch(GAS_API_URL + "?action=process&text=" + encodeURIComponent(trimmedInput))
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(data) {
+        renderResults(data);
+      })
+      .catch(function(err) {
+        handleError(err);
+      });
   }
 
   function renderResults(data) {
